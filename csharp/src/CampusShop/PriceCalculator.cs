@@ -10,7 +10,7 @@ public class PriceCalculator
     /// </summary>
     public decimal ApplyDiscount(decimal total)
     {
-        if (total > 100)
+        if (total >= 100)
             return total - 10;
         return total;
     }
