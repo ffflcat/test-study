@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head(title)">
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title th:text="${title} + ' - CampusShop 校园商城'">CampusShop</title>
+    <link rel="stylesheet" href="/site.css"/>
+</head>
+<body>
+<header th:fragment="header">
+    <span class="brand">CampusShop 校园商城</span>
+    <nav th:if="${session.user != null}">
+        <a href="/products">商品</a>
+        <a href="/cart">购物车</a>
+        <a href="/orders">我的订单</a>
+        <span class="welcome" th:text="'欢迎，' + ${session.user}">欢迎</span>
+        <form method="post" action="/logout" class="inline">
+            <button type="submit">退出</button>
+        </form>
+    </nav>
+</header>
+</body>
+</html>

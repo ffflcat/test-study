@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('登录')}"></head>
+<body>
+<header th:replace="~{fragments :: header}"></header>
+<main>
+    <h1>登录</h1>
+    <form method="post" action="/" class="login">
+        <p>
+            <label for="username">用户名</label>
+            <input id="username" name="username" th:value="${username}" autocomplete="username"/>
+        </p>
+        <p>
+            <label for="password">密码</label>
+            <input id="password" name="password" type="password" autocomplete="current-password"/>
+        </p>
+        <div class="error" data-testid="error-msg" th:if="${error}" th:text="${error}"></div>
+        <button type="submit">登录</button>
+    </form>
+    <p class="hint">演示账号：alice / bob / carol，密码均为 123456</p>
+</main>
+</body>
+</html>

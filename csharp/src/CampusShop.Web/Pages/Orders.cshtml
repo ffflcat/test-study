@@ -1,0 +1,29 @@
+@page
+@model OrdersModel
+@{
+    ViewData["Title"] = "我的订单";
+}
+<h1>我的订单</h1>
+@if (Model.Orders.Count == 0)
+{
+    <p>还没有订单</p>
+}
+else
+{
+    <table>
+        <thead>
+        <tr><th>订单号</th><th>商品</th><th>应付金额</th><th>下单时间</th></tr>
+        </thead>
+        <tbody>
+        @foreach (var o in Model.Orders)
+        {
+            <tr>
+                <td>CS@(o.Id)</td>
+                <td>@string.Join("，", o.Items.Select(i => $"{i.Name} × {i.Quantity}"))</td>
+                <td>¥@o.Total.ToString("0.00")</td>
+                <td>@o.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}

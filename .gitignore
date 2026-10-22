@@ -1,0 +1,12 @@
+bin/
+obj/
+TestResults/
+coveragereport/
+StrykerOutput/
+traces/
+playwright-report/
+.vs/
+.idea/
+*.user
+java/target/
+.claude/settings.local.json

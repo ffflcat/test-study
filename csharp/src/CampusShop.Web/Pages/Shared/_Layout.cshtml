@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - CampusShop 校园商城</title>
+    <link rel="stylesheet" href="~/site.css" />
+</head>
+<body>
+<header>
+    <span class="brand">CampusShop 校园商城</span>
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        <nav>
+            <a href="/Products">商品</a>
+            <a href="/Cart">购物车</a>
+            <a href="/Orders">我的订单</a>
+            <span class="welcome">欢迎，@User.Identity.Name</span>
+            <form method="post" action="/Logout" class="inline">
+                <button type="submit">退出</button>
+            </form>
+        </nav>
+    }
+</header>
+<main>
+    @RenderBody()
+</main>
+</body>
+</html>

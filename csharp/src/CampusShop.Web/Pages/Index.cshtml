@@ -1,0 +1,22 @@
+@page "/"
+@model IndexModel
+@{
+    ViewData["Title"] = "登录";
+}
+<h1>登录</h1>
+<form method="post" class="login">
+    <p>
+        <label for="username">用户名</label>
+        <input id="username" name="Username" value="@Model.Username" autocomplete="username" />
+    </p>
+    <p>
+        <label for="password">密码</label>
+        <input id="password" name="Password" type="password" autocomplete="current-password" />
+    </p>
+    @if (!string.IsNullOrEmpty(Model.Error))
+    {
+        <div class="error" data-testid="error-msg">@Model.Error</div>
+    }
+    <button type="submit">登录</button>
+</form>
+<p class="hint">演示账号：alice / bob / carol，密码均为 123456</p>
