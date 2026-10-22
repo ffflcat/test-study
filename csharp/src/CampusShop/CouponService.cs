@@ -11,7 +11,7 @@ public class CouponService
     public bool IsUsable(Coupon c, decimal amount)
     {
         var today = DateOnly.FromDateTime(DateTime.Now);
-        if (today >= c.ExpireDate)
+        if (today > c.ExpireDate)
             return false;
         if (amount < c.Threshold)
             return false;
