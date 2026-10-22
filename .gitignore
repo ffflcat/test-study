@@ -10,3 +10,4 @@ playwright-report/
 *.user
 java/target/
 .claude/settings.local.json
+项目结构与命名规范.md
