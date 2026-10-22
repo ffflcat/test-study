@@ -24,7 +24,10 @@ public class OrderService
         _inv.Deduct(o.ProductId, o.Quantity);
 
         if (!_pay.Charge(o.UserId, o.Total))
+        {
+            _inv.Restore(o.ProductId, o.Quantity);
             return new OrderResult(OrderStatus.PaymentFailed, Message: "支付失败");
+        }
 
         var orderId = Interlocked.Increment(ref _nextOrderId).ToString();
         try
