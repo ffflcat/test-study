@@ -1,0 +1,111 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  unit-and-api-tests:
+    name: Unit and API tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Restore
+        run: dotnet restore csharp/CampusShop.sln
+
+      - name: Build
+        run: dotnet build csharp/CampusShop.sln --configuration Release --no-restore
+
+      # 单元测试与 API 集成测试都在 CampusShop.Tests 项目里。
+      # 不加 continue-on-error，任何测试失败都会让作业失败。
+      - name: Run unit and API tests with coverage
+        run: >
+          dotnet test csharp/tests/CampusShop.Tests/CampusShop.Tests.csproj
+          --configuration Release
+          --no-build
+          --logger "trx;LogFileName=unit-api.trx"
+          --results-directory TestResults
+          --collect:"XPlat Code Coverage"
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-api-test-results
+          path: TestResults/
+          if-no-files-found: warn
+
+  e2e-tests:
+    name: E2E tests
+    needs: unit-and-api-tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    env:
+      # TracedPageTest 把失败用例的 trace 写到这里（仓库 .gitignore 已忽略 traces/）。
+      E2E_TRACE_DIR: ${{ github.workspace }}/traces
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Build
+        run: dotnet build csharp/CampusShop.sln --configuration Release
+
+      - name: Install Playwright Chromium
+        run: >
+          pwsh csharp/tests/CampusShop.E2E/bin/Release/net10.0/playwright.ps1
+          install --with-deps chromium
+
+      - name: Start web app
+        run: |
+          nohup dotnet run --project csharp/src/CampusShop.Web \
+            --configuration Release --no-build --no-launch-profile \
+            --urls http://localhost:5000 > /tmp/campusshop.log 2>&1 &
+          echo $! > /tmp/campusshop.pid
+
+      - name: Wait for web app
+        run: |
+          for i in $(seq 1 60); do
+            if curl -fsS -o /dev/null http://localhost:5000/; then
+              echo "Web app ready after ${i}s"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "Web app did not become ready within 60s" >&2
+          cat /tmp/campusshop.log >&2
+          exit 1
+
+      - name: Run E2E tests
+        run: >
+          dotnet test csharp/tests/CampusShop.E2E/CampusShop.E2E.csproj
+          --configuration Release
+          --no-build
+          --logger "console;verbosity=normal"
+          --logger "trx;LogFileName=e2e.trx"
+          --results-directory TestResults
+
+      - name: Upload Playwright traces
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-traces
+          path: traces/
+          if-no-files-found: warn
