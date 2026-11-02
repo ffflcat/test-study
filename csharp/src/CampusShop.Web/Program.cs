@@ -4,6 +4,7 @@ using System.Text.Encodings.Web;
 using System.Text.Unicode;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.WebEncoders;
+using Microsoft.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,7 +25,26 @@ builder.Services.AddRazorPages();
 builder.Services.Configure<WebEncoderOptions>(o =>
     o.TextEncoderSettings = new TextEncoderSettings(UnicodeRanges.All));
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(o => o.SwaggerDoc("v1", new() { Title = "CampusShop API", Version = "v1" }));
+builder.Services.AddSwaggerGen(o =>
+{
+    o.SwaggerDoc("v1", new() { Title = "CampusShop API", Version = "v1" });
+
+    // Swagger UI 右上角的 Authorize 按钮：填入登录接口返回的 Token 后，
+    // 后续请求会自动带上 Authorization: Bearer <token>。
+    o.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "输入登录接口返回的 Token（无需手动加 Bearer 前缀）",
+    });
+
+    o.AddSecurityRequirement(document => new OpenApiSecurityRequirement
+    {
+        [new OpenApiSecuritySchemeReference("Bearer", document)] = [],
+    });
+});
 
 var app = builder.Build();
 
