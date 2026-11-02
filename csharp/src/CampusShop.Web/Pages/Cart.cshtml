@@ -28,5 +28,6 @@ else
 }
 <p>应付金额：<span data-testid="cart-total">¥@Model.Total.ToString("0.00")</span></p>
 <form method="post">
-    <button type="submit">下单</button>
+    @* 需求 4.10：购物车为空时“下单”按钮不可点击。 *@
+    <button type="submit" disabled="@Model.Cart.IsEmpty">下单</button>
 </form>
