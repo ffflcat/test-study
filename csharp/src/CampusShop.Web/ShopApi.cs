@@ -26,6 +26,12 @@ public static class ShopApi
 
         api.MapPost("/auth/login", (LoginRequest req, AuthService auth) =>
         {
+            // 需求 1.3：用户名和密码都是必填项，缺少任一项时返回 400。
+            if (string.IsNullOrWhiteSpace(req.Username))
+                return Results.BadRequest(new ErrorResponse("用户名不能为空"));
+            if (string.IsNullOrWhiteSpace(req.Password))
+                return Results.BadRequest(new ErrorResponse("密码不能为空"));
+
             var token = auth.Login(req.Username, req.Password);
             return token is null
                 ? Results.Json(new ErrorResponse("用户名或密码错误"), statusCode: 401)
@@ -73,7 +79,8 @@ public static class ShopApi
             AuthService auth, Pricing pricing, OrderService orders) =>
         {
             if (CurrentUser(http, auth) is not { } user) return Results.Unauthorized();
-            if (req.Quantity == 0 || req.Quantity > MaxQuantity)
+            // 需求 4.6：购买数量必须是 1～99 的整数，负数同样拒绝。
+            if (req.Quantity < 1 || req.Quantity > MaxQuantity)
                 return Results.BadRequest(new ErrorResponse($"数量必须在 1 到 {MaxQuantity} 之间"));
             if (store.FindProduct(req.ProductId) is not { } product)
                 return Results.NotFound(new ErrorResponse("商品不存在"));
