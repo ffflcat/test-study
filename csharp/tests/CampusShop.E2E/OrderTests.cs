@@ -10,7 +10,7 @@ namespace CampusShop.E2E;
 /// 下单流程 E2E。继承 PageTest 后每个 [Test] 都拿到全新的浏览器上下文，
 /// 用例自己登录，不依赖其他用例执行顺序，也不依赖已有购物车内容。
 /// </summary>
-public class OrderTests : PageTest
+public class OrderTests : TracedPageTest
 {
     private const string BaseUrl = "http://localhost:5000";
 

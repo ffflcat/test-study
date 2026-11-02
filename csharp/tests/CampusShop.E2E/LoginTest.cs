@@ -8,7 +8,7 @@ namespace CampusShop.E2E;
 /// 登录冒烟用例。继承 PageTest 后每个 [Test] 都拿到全新的浏览器上下文，
 /// 用例之间不共享 Cookie 或页面状态。
 /// </summary>
-public class LoginTests : PageTest
+public class LoginTests : TracedPageTest
 {
     private const string BaseUrl = "http://localhost:5000";
 

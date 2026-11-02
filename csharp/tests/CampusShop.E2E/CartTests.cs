@@ -9,7 +9,7 @@ namespace CampusShop.E2E;
 /// 购物车 E2E。PageTest 为每个 [Test] 提供全新的浏览器上下文，
 /// 用例自己登录，不依赖其他用例。
 /// </summary>
-public class CartTests : PageTest
+public class CartTests : TracedPageTest
 {
     private const string BaseUrl = "http://localhost:5000";
 
