@@ -112,8 +112,9 @@ public static class ShopApi
 
         api.MapGet("/orders/{id:int}", (int id, HttpContext http, ShopStore store, AuthService auth) =>
         {
-            if (CurrentUser(http, auth) is null) return Results.Unauthorized();
-            if (store.FindOrder(id) is not { } order)
+            if (CurrentUser(http, auth) is not { } user) return Results.Unauthorized();
+            // 需求 4.7：只能查看自己的订单。他人的订单一律当作不存在，避免泄露地址和电话。
+            if (store.FindOrder(id) is not { } order || order.User != user.Username)
                 return Results.NotFound(new ErrorResponse("订单不存在"));
             return Results.Ok(ToDto(order));
         })
